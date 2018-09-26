@@ -1,21 +1,38 @@
 #include <ncurses.h>
 #include <chrono>
 #include <vector>
+#include <numeric>
+#include <string>
 
 int main() {
 	initscr();
     noecho();
-    std::vector<int> time;
-    for (int i = 0; i < 1000; ++i) {
+    std::string text = "start typing these words to practice touch type, try not to look to the keyboard, more to come";
+    std::vector<unsigned long> time;
+    time.reserve(text.size());
+    addstr(text.data());
+    move(0,0);
+    int i = 0;
+    while (i < text.size()) {
         auto start = std::chrono::steady_clock::now();
-        addch('a');
-        refresh();
+        char c = getch();
         auto end = std::chrono::steady_clock::now();
-        time.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+        if (c == text[i]) {
+            attron(A_REVERSE);
+            mvaddch(0, i++, c);
+            attroff(A_REVERSE);
+            refresh();
+            time.push_back(std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count());
+        } else {
+            beep();
+        }
     }
     clear();
-    for (auto t : time)
-        printw("%4d", t);
-    getch();
+    auto avg = std::accumulate(time.begin() + 1, time.end(), 0lu)/(time.size() - 1);
+    printw("your average miliseconds per keystroke: %lu\n", avg);
+    printw("\npress ~ to quit");
+    char c;
+    while ((c = getch()) != '~')
+        ;
 	endwin();
 }

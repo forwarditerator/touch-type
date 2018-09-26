@@ -1,3 +1,12 @@
+Version 1.0
+
 ncurses based program to practice touch type.
 
-statistics and spaced repetition features.
+compile with g++ -std=c++11 -lncurses type.cpp
+
+The text provided for training is static.
+
+As you press the correct keys the text color gets inverted, if the key is wrong a beep is played.
+You don't have to backspace to correct errors, just pressing the key corresponding to the character under the cursor.
+
+At the end you get the average milliseconds between each right key. 
